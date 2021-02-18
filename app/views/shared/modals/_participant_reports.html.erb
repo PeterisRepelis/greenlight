@@ -9,28 +9,28 @@
           </div>
 
 
-          <%= form_for(:room, url: participant_reports_path(room_uid: params[:room_uid])) do |f| %>
-            <div class="input-icon mb-2">
-              <span class="input-icon-addon">
-                <i class="fas fa-user-tag"></i>
-              </span>
-              <%= f.text_field :name, id: "createRoleName", class: "form-control text-center", placeholder: t("modal.create_role.name_placeholder"), autocomplete: :off, required: true %>
-              <div class="invalid-feedback text-left"><%= t("modal.create_role.not_blank") %></div>
+          <%= form_for(:room, url: participant_reports_path(room_uid: params[:room_uid]), method: :get) do |f| %>
+            <div class="row">
+              <div class="col-md-4">
+                <label class="form-label text-left"><%= t("modal.participant_reports.starts_at") %></label>
+              </div>
+              <div class="col-md-8">
+                <%= f.datetime_field :starts_at, class: 'form-control', value: (Time.zone.now - 1.day).to_datetime %>
+              </div>
             </div>
+            <div class="row">
+              <div class="col-md-4">
+                <label class="form-label text-left"><%= t("modal.participant_reports.ends_at") %></label>
+              </div>
+              <div class="col-md-8">
+                <%= f.datetime_field :ends_at, class: 'form-control', value: (Time.zone.now).to_datetime %>
+              </div>
+            </div>
+
             <div class="mt-4">
-                <%= f.submit t("modal.create_role.create"), class: "btn btn-primary btn-block" %>
+                <%= f.submit t("modal.participant_reports.create_report"), class: "btn btn-primary btn-block" %>
             </div>
           <% end %>
-
-
-
-
-
-          <div class="mt-5 text-left">
-            <label class="form-label"><%= t("modal.participant_reports.list") %></label>
-            <ul id="user-list" class="list-group">
-            </ul>
-          </div>
           <input id="room-owner-uid" type="hidden">
         </div>
       </div>

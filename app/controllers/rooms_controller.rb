@@ -106,6 +106,14 @@ class RoomsController < ApplicationController
     return redirect_to root_path,
       flash: { alert: I18n.t("administrator.site_settings.authentication.user-info") } if auth_required
 
+    username = current_user.present? ? (current_user.username || current_user.name) : params["/#{params[:room_uid]}"][:join_name]
+    RoomJoinLog.create!(
+      room: @room,
+      username: username,
+      ip_address: request.remote_ip,
+      action: 'join'
+    )
+
     @shared_room = room_shared_with_user
 
     unless @room.owned_by?(current_user) || @shared_room
@@ -313,7 +321,9 @@ class RoomsController < ApplicationController
 
   # GET /:room_uid/logout
   def logout
+    username = current_user.present? ? (current_user.username || current_user.name) : 'Guest'
     logger.info "Support: #{current_user.present? ? current_user.email : 'Guest'} has left room #{@room.uid}"
+    RoomJoinLog.create!(room: @room, username: username, ip_address: request.remote_ip, action: 'logout')
 
     # Redirect the correct page.
     redirect_to @room
@@ -329,8 +339,12 @@ class RoomsController < ApplicationController
   end
 
   def participant_reports
-    raise params
-  end  
+    if params[:room][:starts_at].blank? || params[:room][:ends_at].blank?
+      redirect_to request.referer, alert: 'No date selected!'
+    else
+      @room.room_join_logs.joined.where("created_at BETWEEN ? AND ?", params[:room][:starts_at].to_datetime, params[:room][:ends_at].to_datetime)
+    end
+  end
 
   private
 

@@ -84,6 +84,7 @@ ActiveRecord::Schema.define(version: 2021_02_10_143131) do
 
   create_table "room_join_logs", force: :cascade do |t|
     t.integer "room_id"
+    t.string "action"
     t.string "username"
     t.string "ip_address"
     t.datetime "created_at", null: false
