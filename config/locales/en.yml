@@ -648,3 +648,8 @@ en:
     signin: Please sign in to access your account.
     title: Verify your email
     verification: Verification
+  participant_reports:
+    main_title: "%{room_name} participant report"
+    username: Name
+    ip_address: IP address
+    created_at: Time

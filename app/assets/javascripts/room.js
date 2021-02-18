@@ -264,6 +264,7 @@ function showDeleteRoom(target) {
 //Update the createRoomModal to show the correct current settings
 function updateCurrentSettings(settings_path){
   // Get current room settings and set checkbox
+  console.log('asd');
   $.get(settings_path, function(settings) {
     $("#room_mute_on_join").prop("checked", $("#room_mute_on_join").data("default") || settings.muteOnStart)
     $("#room_require_moderator_approval").prop("checked", $("#room_require_moderator_approval").data("default") || settings.requireModeratorApproval)

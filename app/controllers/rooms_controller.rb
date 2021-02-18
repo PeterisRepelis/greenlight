@@ -339,10 +339,43 @@ class RoomsController < ApplicationController
   end
 
   def participant_reports
-    if params[:room][:starts_at].blank? || params[:room][:ends_at].blank?
-      redirect_to request.referer, alert: 'No date selected!'
-    else
-      @room.room_join_logs.joined.where("created_at BETWEEN ? AND ?", params[:room][:starts_at].to_datetime, params[:room][:ends_at].to_datetime)
+    respond_to do |format|
+      format.html do
+        if params[:room][:starts_at].blank? || params[:room][:ends_at].blank?
+          redirect_to request.referer, alert: 'No date selected!'
+        else
+          @starts_at = params[:room][:starts_at].to_datetime
+          @ends_at = params[:room][:ends_at].to_datetime
+          @room_join_logs = @room.room_join_logs.joined.where("created_at BETWEEN ? AND ?", @starts_at, @ends_at)
+        end       
+      end
+      format.pdf do
+        if params[:starts_at].blank? || params[:ends_at].blank?
+          redirect_to request.referer, alert: 'No date selected!'
+        else
+          @starts_at = params[:starts_at].to_datetime
+          @ends_at = params[:ends_at].to_datetime
+          @room_join_logs = @room.room_join_logs.joined.where("created_at BETWEEN ? AND ?", @starts_at, @ends_at)
+        end
+
+        pdf = Prawn::Document.new
+        ac = ApplicationController.renderer
+
+        translations = {}
+        translations[:main_title] = I18n.t("participant_reports.main_title", room_name: @room.name)
+        translations[:username] = I18n.t("participant_reports.username")
+        translations[:ip_address] = I18n.t("participant_reports.ip_address")
+        translations[:created_at] = I18n.t("participant_reports.created_at")
+        pdf.bounding_box([pdf.bounds.left, pdf.bounds.top], width: pdf.bounds.width, height: pdf.bounds.height) do
+          ac.render(template: 'rooms/participant_reports.pdf.prawn',
+                    layout: false,
+                    locals: { pdf: pdf, room: @room, starts_at: @starts_at, ends_at: @ends_at, room_join_logs: @room_join_logs }.merge(translations))
+        end
+        send_data pdf.render,
+          filename: "participant_reports.pdf",
+          type: 'application/pdf',
+          disposition: 'inline'
+      end
     end
   end
 

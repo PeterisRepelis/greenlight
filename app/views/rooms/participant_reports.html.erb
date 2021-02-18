@@ -1,1 +1,54 @@
-= @room.inspect
+<div class="container">
+  <h1 class="text-center"><%= t("participant_reports.main_title", room_name: @room.name) %></h1>
+  <h3 class="text-center"><%= "#{@starts_at.strftime("%d.%m.%Y %H:%M")} -> #{@ends_at.strftime("%d.%m.%Y %H:%M")}" %></h3>
+
+  <div class="form-group">
+    <div class="row">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table table-hover table-outline table-vcenter card-table">
+            <thead>
+              <tr>
+                <th>
+                  <%= t("participant_reports.username") %>
+                </th>
+                <th>
+                  <%= t("participant_reports.ip_address") %>
+                </th>
+                <th>
+                  <%= t("participant_reports.created_at") %>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if @room_join_logs %>
+                <% @room_join_logs.each do |log| %>
+                  <tr>
+                      <td>
+                        <div><%= log.username %></div>
+                      </td>
+                      <td>
+                        <div><%= log.ip_address %></div>
+                      </td>
+                      <td>
+                        <div><%= log.created_at.strftime("%d.%m.%Y %H:%M") %></div>
+                      </td>
+                  </tr>
+                <% end %>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <a href="<%= participant_reports_path(room_uid: @room.uid, starts_at: @starts_at, ends_at: @ends_at, method: :get, format: :pdf) %>" target='_blank'>
+    <button id="copy-invite" class="btn btn-primary float-right">
+      <i class="fas fa-file-pdf mr-1"></i>
+      PDF
+    </button>
+  </a>
+</div>
+
