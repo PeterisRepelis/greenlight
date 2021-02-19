@@ -29,8 +29,11 @@ class Room < ApplicationRecord
 
   belongs_to :owner, class_name: 'User', foreign_key: :user_id
   has_many :shared_access
+  has_many :room_join_logs
 
   has_one_attached :presentation
+
+  attr_accessor :starts_at, :ends_at
 
   class << self
     include Queries

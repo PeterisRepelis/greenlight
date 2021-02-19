@@ -106,6 +106,14 @@ class RoomsController < ApplicationController
     return redirect_to root_path,
       flash: { alert: I18n.t("administrator.site_settings.authentication.user-info") } if auth_required
 
+    username = current_user.present? ? (current_user.username || current_user.name) : params["/#{params[:room_uid]}"][:join_name]
+    RoomJoinLog.create!(
+      room: @room,
+      username: username,
+      ip_address: request.remote_ip,
+      action: 'join'
+    )
+
     @shared_room = room_shared_with_user
 
     unless @room.owned_by?(current_user) || @shared_room
@@ -313,7 +321,9 @@ class RoomsController < ApplicationController
 
   # GET /:room_uid/logout
   def logout
+    username = current_user.present? ? (current_user.username || current_user.name) : 'Guest'
     logger.info "Support: #{current_user.present? ? current_user.email : 'Guest'} has left room #{@room.uid}"
+    RoomJoinLog.create!(room: @room, username: username, ip_address: request.remote_ip, action: 'logout')
 
     # Redirect the correct page.
     redirect_to @room
@@ -326,6 +336,67 @@ class RoomsController < ApplicationController
     flash[:alert] = I18n.t("room.access_code_required") if session[:access_code] != @room.access_code
 
     redirect_to room_path(@room.uid)
+  end
+
+  def participant_reports
+    unless current_user.rooms.include?(@room) || (current_user.has_role? :super_admin)
+      return redirect_to @room, alert: I18n.t("room.no_room.invalid_room_uid")
+    end
+
+    respond_to do |format|
+      format.json do
+        first_log = @room.room_join_logs.joined.any? ? @room.room_join_logs.joined.first : nil
+        last_log = @room.room_join_logs.joined.any? ? @room.room_join_logs.joined.last : nil
+        starts_at = (first_log.present? ? first_log.created_at : Time.zone.now - 1.day)
+        ends_at = (last_log.present? ? last_log.created_at : Time.zone.now)
+
+        data_for_report = {
+          name: @room.name,
+          uid: @room.uid,
+          report_path: participant_reports_path(room_uid: @room.uid),
+          starts_at: starts_at.strftime('%Y-%m-%dT%H:%M'),
+          ends_at: ends_at.strftime('%Y-%m-%dT%H:%M')
+        }
+
+        render json: data_for_report
+      end
+      format.html do
+        if params[:room][:starts_at].blank? || params[:room][:ends_at].blank?
+          redirect_to request.referer, alert: 'No date selected!'
+        else
+          @starts_at = params[:room][:starts_at].to_datetime
+          @ends_at = params[:room][:ends_at].to_datetime
+          @room_join_logs = @room.room_join_logs.joined.where("created_at BETWEEN ? AND ?", @starts_at, @ends_at)
+        end
+      end
+      format.pdf do
+        if params[:starts_at].blank? || params[:ends_at].blank?
+          redirect_to request.referer, alert: 'No date selected!'
+        else
+          @starts_at = params[:starts_at].to_datetime
+          @ends_at = params[:ends_at].to_datetime
+          @room_join_logs = @room.room_join_logs.joined.where("created_at BETWEEN ? AND ?", @starts_at, @ends_at)
+        end
+
+        pdf = Prawn::Document.new
+        ac = ApplicationController.renderer
+
+        translations = {}
+        translations[:main_title] = I18n.t("participant_reports.main_title", room_name: @room.name)
+        translations[:username] = I18n.t("participant_reports.username")
+        translations[:ip_address] = I18n.t("participant_reports.ip_address")
+        translations[:created_at] = I18n.t("participant_reports.created_at")
+        pdf.bounding_box([pdf.bounds.left, pdf.bounds.top], width: pdf.bounds.width, height: pdf.bounds.height) do
+          ac.render(template: 'rooms/participant_reports.pdf.prawn',
+                    layout: false,
+                    locals: { pdf: pdf, room: @room, starts_at: @starts_at, ends_at: @ends_at, room_join_logs: @room_join_logs }.merge(translations))
+        end
+        send_data pdf.render,
+          filename: "participant_reports.pdf",
+          type: 'application/pdf',
+          disposition: 'inline'
+      end
+    end
   end
 
   private
