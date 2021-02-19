@@ -65,6 +65,10 @@ $(document).on('turbolinks:load', function(){
       displaySharedUsers($(this).data("users-path"))
     })
 
+    $(".participant_report-room").click(function() {
+      roomReportData($(this).data("room-path"));
+    })
+
     $("#shareRoomModal").on("show.bs.modal", function() {
       $(".selectpicker").selectpicker('val','')
     })
@@ -96,9 +100,9 @@ $(document).on('turbolinks:load', function(){
             })
             // Only refresh the select dropdown if there are results to show
             $('#share-room-select').selectpicker('refresh');
-          } 
+          }
           $(".bs-searchbox").siblings().show()
-        })     
+        })
       }
     })
 
@@ -264,7 +268,6 @@ function showDeleteRoom(target) {
 //Update the createRoomModal to show the correct current settings
 function updateCurrentSettings(settings_path){
   // Get current room settings and set checkbox
-  console.log('asd');
   $.get(settings_path, function(settings) {
     $("#room_mute_on_join").prop("checked", $("#room_mute_on_join").data("default") || settings.muteOnStart)
     $("#room_require_moderator_approval").prop("checked", $("#room_require_moderator_approval").data("default") || settings.requireModeratorApproval)
@@ -346,10 +349,10 @@ function updatePreuploadPresentationModal(target) {
       $("#use-pres").show()
     }
   });
-  
+
   $("#preuploadPresentationModal form").attr("action", $(target).data("path"))
   $("#remove-presentation").data("remove",  $(target).data("remove"))
-  
+
   // Reset values to original to prevent confusion
   $("#presentation-upload").val("")
   $("#presentation-upload-label").text($("#presentation-upload-label").data("placeholder"))
@@ -396,6 +399,23 @@ function filterRooms() {
 }
 
 function clearRoomSearch() {
-  $('#room-search').val(''); 
+  $('#room-search').val('');
   filterRooms()
+}
+
+// Set room data for report
+function roomReportData(path) {
+  console.log('path', path);
+  $.ajax({
+    url: path,
+    type: 'GET',
+    format: 'json',
+    cache: false,
+    success:function (data, status){
+      $('#participant_report-title').html(data.name);
+      $('#participant_report-starts_at').val(data.starts_at);
+      $('#participant_report-ends_at').val(data.ends_at);
+      $('#participant-report-form').attr('action', data.report_path);
+    }
+  });
 }

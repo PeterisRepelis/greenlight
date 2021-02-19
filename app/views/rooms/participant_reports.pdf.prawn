@@ -5,9 +5,9 @@ pdf.text I18n.transliterate("#{starts_at.strftime("%d.%m.%Y %H:%M")} -> #{ends_a
 pdf.move_down 10
 
 table = []
-header = [I18n.transliterate(username), I18n.transliterate(ip_address), I18n.transliterate(created_at)]
+header = ['', I18n.transliterate(username), I18n.transliterate(ip_address), I18n.transliterate(created_at)]
 table << header
-room_join_logs.each do |log|
-  table << [I18n.transliterate(log.username), log.ip_address, I18n.transliterate(log.created_at.strftime("%d.%m.%Y %H:%M"))]
+room_join_logs.each_with_index do |log, index|
+  table << ["#{index+1}.", I18n.transliterate(log.username), log.ip_address, I18n.transliterate(log.created_at.strftime("%d.%m.%Y %H:%M"))]
 end
-pdf.table(table, :column_widths => [310, 100, 100])
+pdf.table(table, :column_widths => [40, 270, 100, 100])

@@ -339,7 +339,29 @@ class RoomsController < ApplicationController
   end
 
   def participant_reports
+    unless current_user.rooms.include?(@room) || (current_user.has_role? :super_admin)
+      return redirect_to @room, alert: I18n.t("room.no_room.invalid_room_uid")
+    end
+
     respond_to do |format|
+      format.json do
+        first_log = @room.room_join_logs.joined.any? ? @room.room_join_logs.joined.first : nil
+        last_log = @room.room_join_logs.joined.any? ? @room.room_join_logs.joined.last : nil
+
+        starts_at = (first_log.present? ? first_log.created_at : Time.zone.now - 1.day)
+        ends_at = (last_log.present? ? last_log.created_at : Time.zone.now)
+
+        data_for_report = {
+          name: @room.name,
+          uid: @room.uid,
+          report_path: participant_reports_path(room_uid: @room.uid),
+          starts_at: starts_at.strftime('%Y-%m-%dT%H:%M'),
+          ends_at: ends_at.strftime('%Y-%m-%dT%H:%M')
+        }
+
+        # "2021-02-10T10:52"
+        render json: data_for_report
+      end
       format.html do
         if params[:room][:starts_at].blank? || params[:room][:ends_at].blank?
           redirect_to request.referer, alert: 'No date selected!'
@@ -347,7 +369,7 @@ class RoomsController < ApplicationController
           @starts_at = params[:room][:starts_at].to_datetime
           @ends_at = params[:room][:ends_at].to_datetime
           @room_join_logs = @room.room_join_logs.joined.where("created_at BETWEEN ? AND ?", @starts_at, @ends_at)
-        end       
+        end
       end
       format.pdf do
         if params[:starts_at].blank? || params[:ends_at].blank?

@@ -94,7 +94,7 @@ lv:
       demoted: Lietotāja loma ir pazemināta
       invite: "Uzaicinājums sekmīgi nosūtīts uz %{email}"
       invite_email_verification: "Lai izmantotu šo metodi, jāiespējo e-pasta paziņojumi. Sazinieties ar sistēmas administratoru."
-      merge_fail: "Apvienojot lietotāju kontus, radās kļūme. Pārbaudiet izvēlētos lietotājus un mēģiniet vēlreiz" 
+      merge_fail: "Apvienojot lietotāju kontus, radās kļūme. Pārbaudiet izvēlētos lietotājus un mēģiniet vēlreiz"
       merge_success: Lietotāja konti tika sekmīgi apvienoti
       perm_deleted: Lietotājs tika neatgriezeniski (bez atgriešanas iespējas) izdzēsts
       promoted: Lietotāja loma paaugstināta
@@ -123,7 +123,7 @@ lv:
       edit_site_settings: Lietotājiem ar šo lomu ļaut rediģēt vietnes iestatījumus
       edit_roles: Lietotājiem ar šo lomu ļaut rediģēt citas lomas
       manage_users: Lietotājiem ar šo lomu ļaut pārvaldīt lietotājus
-      invalid_assignment: "Piešķirot lomu lietotājam, gadījās ķibele. Lūdzu, pārbaudiet vērtības un mēģiniet vēlreiz" 
+      invalid_assignment: "Piešķirot lomu lietotājam, gadījās ķibele. Lūdzu, pārbaudiet vērtības un mēģiniet vēlreiz"
       colour:
         title: Lomas krāsa
         info: Iestatiet šai lomai krāsu
@@ -392,8 +392,9 @@ lv:
       footer: "Apvienotā konta sapulču telpas tiks pārceltas uz Primārā konta telpu sarakstu, un pēc tam otrs konts tiks dzēsts."
     participant_reports:
       title: Dalībnieku atskaite
-      cancel_changes: Atcelt
-      fetch: Iegūt
+      starts_at: Datums / laiks no
+      ends_at: Datums / laiks līdz
+      create_report: Izveidot atskaiti
   name_update_success: Telpas nosaukums sekmīgi nomainīts!
   no_user_email_exists: "Lietotājs ar norādīto e-pastu netika atrasts. Pārbaudiet, vai e-pasts ir ievadīts pareizi."
   omniauth_error: "Autentificējot ar omniauth, gadījās kļūme. Lūdzu, mēģiniet vēlreiz vai sazinieties ar administratoru!"
@@ -445,7 +446,7 @@ lv:
       fail: "Jūsu konts vēl nav apstiprināts. Ja pēc reģistrācijas ir pagājušas vairākas dienas, sazinieties ar administratoru."
       signup: Jūsu konts ir sekmīgi izveidots. Paziņojums ir nosūtīts apstiprināšanai administratoram.
     banned:
-      fail: "Jums nav piekļuves lietotnei. Ja esat pārliecināti, ka tā ir kļūme, lūdzu, sazinieties ar administratoru." 
+      fail: "Jums nav piekļuves lietotnei. Ja esat pārliecināti, ka tā ir kļūme, lūdzu, sazinieties ar administratoru."
     deprecated:
       new_signin: Izvēlieties savam kontam jaunu ierakstīšanās metodi. Visas vecā konta telpas tiks pārceltas uz jauno kontu.
       twitter_signin: "Ierakstīšanās, izmantojot Twitter, ir novecojusi, un nākotnē tā tiks noņemta. Dodieties uz <a href=\\\"%{link}\\\"> šejieni </a>, lai mainītu sava konta autentifikācijas metodi."
@@ -515,7 +516,7 @@ lv:
     wait:
       message: Sapulce vēl nav sākusies
       auto: "Sākoties sapulcei, jūs tiksiet pievienots automātiski."
-    participant_reports: Dalībnieku atskaite  
+    participant_reports: Dalībnieku atskaite
   settings:
     account:
       fullname: Pilns vārds
@@ -561,3 +562,8 @@ lv:
     signin: "Lūdzu, ierakstieties sistēmā, lai piekļūtu savam kontam."
     title: "Verificējiet/apstipriniet savu e-pasta adresi %{email}"
     verification: Verifikācija
+  participant_reports:
+    main_title: "%{room_name} dalībnieku atskaite"
+    username: Dalībnieks
+    ip_address: IP adrese
+    created_at: Laiks
