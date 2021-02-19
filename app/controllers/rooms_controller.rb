@@ -347,7 +347,6 @@ class RoomsController < ApplicationController
       format.json do
         first_log = @room.room_join_logs.joined.any? ? @room.room_join_logs.joined.first : nil
         last_log = @room.room_join_logs.joined.any? ? @room.room_join_logs.joined.last : nil
-
         starts_at = (first_log.present? ? first_log.created_at : Time.zone.now - 1.day)
         ends_at = (last_log.present? ? last_log.created_at : Time.zone.now)
 
@@ -359,7 +358,6 @@ class RoomsController < ApplicationController
           ends_at: ends_at.strftime('%Y-%m-%dT%H:%M')
         }
 
-        # "2021-02-10T10:52"
         render json: data_for_report
       end
       format.html do
